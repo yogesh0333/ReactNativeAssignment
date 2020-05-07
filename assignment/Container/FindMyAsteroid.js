@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, TextInput} from 'react-native';
+import {View, StyleSheet, TextInput, Image} from 'react-native';
 import {Button, Text} from 'native-base';
 
 export default class FindMyAsteroid extends Component {
@@ -80,23 +80,38 @@ export default class FindMyAsteroid extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <View style={styles.textInput}>
-          <TextInput
-            value={this.state.value}
-            placeholder="Enter Asteroid ID"
-            onChangeText={this.handleTextInput}
-          />
+      <View style={{flex: 1}}>
+        <Image
+          source={{
+            uri:
+              'https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1840&q=80',
+          }}
+          style={styles.image}
+        />
+        <View style={styles.container}>
+          <View style={styles.textInput}>
+            <TextInput
+              value={this.state.value}
+              placeholder="Enter Asteroid ID"
+              onChangeText={this.handleTextInput}
+            />
+          </View>
+          <Button
+            rounded
+            disabled={this.disabled()}
+            style={styles.button}
+            onPress={this.fetchAsteroid}
+            success>
+            <Text style={styles.text}>Submit</Text>
+          </Button>
+          <Button
+            style={styles.button}
+            onPress={this.fetchRandomAsteroid}
+            rounded
+            dark>
+            <Text>Random Asteroid</Text>
+          </Button>
         </View>
-        <Button
-          disabled={this.disabled()}
-          style={styles.button}
-          onPress={this.fetchAsteroid}>
-          <Text>Submit</Text>
-        </Button>
-        <Button style={styles.button} onPress={this.fetchRandomAsteroid}>
-          <Text>Random Asteroid</Text>
-        </Button>
       </View>
     );
   }
@@ -104,7 +119,7 @@ export default class FindMyAsteroid extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: '30%',
+    marginTop: '40%',
     margin: 25,
     alignContent: 'center',
   },
@@ -112,8 +127,21 @@ const styles = StyleSheet.create({
     borderWidth: 0.3,
     paddingLeft: 10,
     padding: 5,
+    backgroundColor: '#fff',
+    opacity: 0.85,
   },
   button: {
     marginTop: 25,
+    justifyContent: 'center',
+  },
+  text: {
+    textAlign: 'center',
+  },
+  image: {
+    height: '100%',
+    width: '100%',
+    position: 'absolute',
+    opacity: 0.9,
+    resizeMode: 'cover',
   },
 });
