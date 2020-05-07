@@ -1,5 +1,12 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, TextInput, Image} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  TextInput,
+  Image,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
 import {Button, Text} from 'native-base';
 
 export default class FindMyAsteroid extends Component {
@@ -7,6 +14,7 @@ export default class FindMyAsteroid extends Component {
     super(props);
     this.state = {
       value: '',
+      isLoading: false,
     };
   }
 
@@ -24,9 +32,11 @@ export default class FindMyAsteroid extends Component {
   };
 
   fetchAsteroid = random => {
+    this.setState({
+      isLoading: true,
+    });
     fetch(
-      `https://api.nasa.gov/neo/rest/v1/neo/${this.state.value ||
-        random}?api_key=Xw1S7uf34dS4XnNG1V1LTEbDwD3CQHtmXZDx2VfA`,
+      `https://api.nasa.gov/neo/rest/v1/neo/${random}?api_key=Xw1S7uf34dS4XnNG1V1LTEbDwD3CQHtmXZDx2VfA`,
       {
         method: 'GET',
         headers: {
@@ -37,6 +47,9 @@ export default class FindMyAsteroid extends Component {
     )
       .then(response => response.json())
       .then(result => {
+        this.setState({
+          isLoading: false,
+        });
         if (result.is_potentially_hazardous_asteroid === false) {
           this.props.navigation.navigate('MyResults', {
             name: result.name,
@@ -52,7 +65,10 @@ export default class FindMyAsteroid extends Component {
         }
       })
       .catch(error => {
-        console.error(error);
+        this.setState({
+          isLoading: false,
+        });
+        Alert.alert('Please enter Correct id 😁');
       });
   };
 
@@ -100,8 +116,9 @@ export default class FindMyAsteroid extends Component {
             rounded
             disabled={this.disabled()}
             style={styles.button}
-            onPress={this.fetchAsteroid}
-            success>
+            onPress={value => {
+              this.fetchAsteroid(this.state.value);
+            }}>
             <Text style={styles.text}>Submit</Text>
           </Button>
           <Button
@@ -109,8 +126,13 @@ export default class FindMyAsteroid extends Component {
             onPress={this.fetchRandomAsteroid}
             rounded
             dark>
-            <Text>Random Asteroid</Text>
+            <Text style={styles.text}>Random Asteroid</Text>
           </Button>
+          {this.state.isLoading && (
+            <View style={styles.loader}>
+              <ActivityIndicator size={50} color="#00ff00" />
+            </View>
+          )}
         </View>
       </View>
     );
@@ -124,11 +146,11 @@ const styles = StyleSheet.create({
     alignContent: 'center',
   },
   textInput: {
-    borderWidth: 0.3,
+    borderWidth: 0.5,
     paddingLeft: 10,
     padding: 5,
     backgroundColor: '#fff',
-    opacity: 0.85,
+    opacity: 0.9,
   },
   button: {
     marginTop: 25,
@@ -136,6 +158,7 @@ const styles = StyleSheet.create({
   },
   text: {
     textAlign: 'center',
+    textTransform: 'capitalize',
   },
   image: {
     height: '100%',
@@ -143,5 +166,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     opacity: 0.9,
     resizeMode: 'cover',
+  },
+  loader: {
+    marginTop: 50,
   },
 });

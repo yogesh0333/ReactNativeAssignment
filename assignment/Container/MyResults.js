@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, StyleSheet, Image} from 'react-native';
+import {View, Text, StyleSheet, Image, Linking} from 'react-native';
 import {Card, CardItem, Body} from 'native-base';
 
 const MyResults = ({route, navigation}) => {
@@ -23,14 +23,19 @@ const MyResults = ({route, navigation}) => {
           <CardItem style={styles.card}>
             <Body>
               <Text style={styles.text}>
-                Name:{'  '} {name}
+                Name:{'  '} <Text>{name}</Text>
               </Text>
               <Text style={styles.text}>
-                nasa_jpl_url:{'  '} {nasa_jpl_url}
+                Nasa_jpl_url:{'  '}
+                <Text
+                  style={styles.textLink}
+                  onPress={() => Linking.openURL(nasa_jpl_url)}>
+                  {nasa_jpl_url}
+                </Text>
               </Text>
               <Text style={styles.text}>
-                is_potentially_hazardous_asteroid:{'   '}
-                {is_potentially_hazardous_asteroid}
+                Is_potentially_hazardous_asteroid:{'   '}
+                <Text>{is_potentially_hazardous_asteroid}</Text>
               </Text>
             </Body>
           </CardItem>
@@ -59,6 +64,13 @@ const styles = StyleSheet.create({
     fontSize: 17,
     marginTop: 10,
     color: '#fff',
+  },
+
+  textLink: {
+    fontSize: 17,
+    marginTop: 10,
+    color: '#fff',
+    textDecorationLine: 'underline',
   },
   card: {
     height: 200,
