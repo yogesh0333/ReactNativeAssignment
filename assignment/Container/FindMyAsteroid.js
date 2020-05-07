@@ -6,7 +6,7 @@ export default class FindMyAsteroid extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: '2021277',
+      value: '',
     };
   }
 
@@ -23,11 +23,10 @@ export default class FindMyAsteroid extends Component {
     }
   };
 
-  fetchAsteroid = () => {
+  fetchAsteroid = random => {
     fetch(
-      `https://api.nasa.gov/neo/rest/v1/neo/${
-        this.state.value
-      }?api_key=Xw1S7uf34dS4XnNG1V1LTEbDwD3CQHtmXZDx2VfA`,
+      `https://api.nasa.gov/neo/rest/v1/neo/${this.state.value ||
+        random}?api_key=Xw1S7uf34dS4XnNG1V1LTEbDwD3CQHtmXZDx2VfA`,
       {
         method: 'GET',
         headers: {
@@ -38,15 +37,41 @@ export default class FindMyAsteroid extends Component {
     )
       .then(response => response.json())
       .then(result => {
-        this.props.navigation.navigate('MyResults', {
-          name: result.name,
-          nasa_jpl_url: result.nasa_jpl_url,
-          is_potentially_hazardous_asteroid:
-            result.is_potentially_hazardous_asteroid,
-        });
-        console.log(result.name);
-        console.log(result.nasa_jpl_url);
-        console.log(result.is_potentially_hazardous_asteroid);
+        if (result.is_potentially_hazardous_asteroid === false) {
+          this.props.navigation.navigate('MyResults', {
+            name: result.name,
+            nasa_jpl_url: result.nasa_jpl_url,
+            is_potentially_hazardous_asteroid: 'No',
+          });
+        } else {
+          this.props.navigation.navigate('MyResults', {
+            name: result.name,
+            nasa_jpl_url: result.nasa_jpl_url,
+            is_potentially_hazardous_asteroid: 'Yes',
+          });
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
+
+  fetchRandomAsteroid = () => {
+    fetch(`https://api.nasa.gov/neo/rest/v1/neo/browse?api_key=DEMO_KEY`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(response => response.json())
+      .then(result => {
+        console.log(
+          result.near_earth_objects[Math.floor(Math.random() * 20)].id,
+        );
+        this.fetchAsteroid(
+          result.near_earth_objects[Math.floor(Math.random() * 20)].id,
+        );
       })
       .catch(error => {
         console.error(error);
@@ -69,20 +94,9 @@ export default class FindMyAsteroid extends Component {
           onPress={this.fetchAsteroid}>
           <Text>Submit</Text>
         </Button>
-        <Button style={styles.button} onPress={this.fetchAsteroid}>
+        <Button style={styles.button} onPress={this.fetchRandomAsteroid}>
           <Text>Random Asteroid</Text>
         </Button>
-        {/* <Button
-          title="Go to Details"
-          onPress={() => {
-            this.props.navigation.navigate('MyResults', {
-              itemId: 86,
-              otherParam: 'anything you want here',
-            });
-          }}
-          style={styles.button}>
-          <Text>test</Text>
-        </Button> */}
       </View>
     );
   }
@@ -96,7 +110,6 @@ const styles = StyleSheet.create({
   },
   textInput: {
     borderWidth: 0.3,
-    // margin: 10,
     paddingLeft: 10,
     padding: 5,
   },
